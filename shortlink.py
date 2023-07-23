@@ -11,22 +11,21 @@ def make_url_for_api(input_url):
     url = urljoin(base_url, bitlink_path)
     return url
 
-def is_bitlink(token, input_url):
-
+def bearer_auth(token):
     bearer = "Bearer {t}".format(t=token)
     headers = {
         "Authorization": bearer 
     }
+    return headers
+
+def is_bitlink(headers, input_url):
+
     response = requests.get(input_url, headers=headers)
     return response.ok
 
 
-def shorten_link(token, link):
+def shorten_link(headers, link):
     url = "{b}shorten".format(b=base_url)
-    bearer = "Bearer {t}".format(t=token)
-    headers = {
-        "Authorization": bearer 
-    }
     payload = {
         "long_url": link 
     }
@@ -34,12 +33,8 @@ def shorten_link(token, link):
     response.raise_for_status()
     return response.json()['link']
 
-def count_clicks(token, input_url):
+def count_clicks(headers, input_url):
     url = "{i}/clicks".format(i=input_url)
-    bearer = "Bearer {t}".format(t=token)
-    headers = {
-        "Authorization": bearer 
-    }
     params = {
         "unit": "day",
         "units": -1
@@ -55,15 +50,16 @@ def count_clicks(token, input_url):
 if __name__ == "__main__":
  user_input = input("Введите ссылку:")
  api_url = make_url_for_api(user_input)
- if is_bitlink(token, api_url):
+ auth_headers = bearer_auth(token)
+ if is_bitlink(auth_headers, api_url):
     try:
-        c_count = count_clicks(token, api_url)
+        c_count = count_clicks(auth_headers, api_url)
         print("По вашей ссылке прошли {c} раз(а)".format(c=c_count))
     except requests.exceptions.HTTPError as error:
         sys.exit("Can't get data from server:\n{0}".format(error))
  else:
     try:  
-        bitlink = shorten_link(token, user_input)
+        bitlink = shorten_link(auth_headers, user_input)
         print('Битлинк', bitlink)
     except requests.exceptions.HTTPError as error:
         sys.exit("Can't get data from server:\n{0}".format(error))
