@@ -5,15 +5,19 @@ from urllib.parse import urljoin, urlparse
 
 base_url = 'https://api-ssl.bitly.com/v4/'
 
-def is_bitlink(token, input_url):
+def make_url_for_api(input_url):
     link = urlparse(input_url)
     bitlink_path = "bitlinks/{lh}{lp}".format(lh=link.hostname, lp=link.path)
     url = urljoin(base_url, bitlink_path)
+    return url
+
+def is_bitlink(token, input_url):
+
     bearer = "Bearer {t}".format(t=token)
     headers = {
         "Authorization": bearer 
     }
-    response = requests.get(url, headers=headers)
+    response = requests.get(input_url, headers=headers)
     return response.ok
 
 
@@ -31,9 +35,7 @@ def shorten_link(token, link):
     return response.json()['link']
 
 def count_clicks(token, input_url):
-    link = urlparse(input_url)
-    clicks_path = "bitlinks/{lh}{lp}/clicks".format(lh=link.hostname, lp=link.path)
-    url = urljoin(base_url, clicks_path)
+    url = "{i}/clicks".format(i=input_url)
     bearer = "Bearer {t}".format(t=token)
     headers = {
         "Authorization": bearer 
@@ -52,17 +54,16 @@ def count_clicks(token, input_url):
 
 if __name__ == "__main__":
  user_input = input("Введите ссылку:")
- if is_bitlink(token, user_input):
+ api_url = make_url_for_api(user_input)
+ if is_bitlink(token, api_url):
     try:
-        c_count = count_clicks(token, user_input)
+        c_count = count_clicks(token, api_url)
         print("По вашей ссылке прошли {c} раз(а)".format(c=c_count))
-    except requests.exceptions.HTTPError:
-        print("Вы ввели не корректную ссылку")
-        sys.exit()
+    except requests.exceptions.HTTPError as error:
+        sys.exit("Can't get data from server:\n{0}".format(error))
  else:
     try:  
         bitlink = shorten_link(token, user_input)
         print('Битлинк', bitlink)
-    except requests.exceptions.HTTPError:
-        print("Вы ввели не корректную ссылку")
-        sys.exit()
+    except requests.exceptions.HTTPError as error:
+        sys.exit("Can't get data from server:\n{0}".format(error))
