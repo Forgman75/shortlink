@@ -14,7 +14,6 @@ def is_bitlink(token, input_url):
         "Authorization": bearer 
     }
     response = requests.get(url, headers=headers)
-    response.raise_for_status()
     return response.ok
 
 
