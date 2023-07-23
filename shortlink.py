@@ -47,19 +47,23 @@ def count_clicks(headers, input_url):
 
 
 
-if __name__ == "__main__":
- user_input = input("Введите ссылку:")
- api_url = make_url_for_api(user_input)
- auth_headers = bearer_auth(token)
- if is_bitlink(auth_headers, api_url):
-    try:
+def main():
+    user_input = input("Введите ссылку:")
+    api_url = make_url_for_api(user_input)
+    auth_headers = bearer_auth(token)
+    if is_bitlink(auth_headers, api_url):
+      try:
         c_count = count_clicks(auth_headers, api_url)
         print("По вашей ссылке прошли {c} раз(а)".format(c=c_count))
-    except requests.exceptions.HTTPError as error:
+      except requests.exceptions.HTTPError as error:
         sys.exit("Can't get data from server:\n{0}".format(error))
- else:
-    try:  
+    else:
+      try:  
         bitlink = shorten_link(auth_headers, user_input)
         print('Битлинк', bitlink)
-    except requests.exceptions.HTTPError as error:
+      except requests.exceptions.HTTPError as error:
         sys.exit("Can't get data from server:\n{0}".format(error))
+
+
+if __name__ == "__main__":
+    main()
