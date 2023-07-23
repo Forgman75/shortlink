@@ -1,4 +1,5 @@
 import requests
+import sys
 from account import token
 url = 'https://api-ssl.bitly.com/v4/shorten'
 def shorten_link(link):
@@ -15,5 +16,10 @@ def shorten_link(link):
     return response.json()['link']
 
 if __name__ == "__main__":
- link = input("Введите ссылку, которую нужно сократить:")   
+ link = input("Введите ссылку, которую нужно сократить:")
+ try:  
+    bitlink = shorten_link(link)
+ except requests.exceptions.HTTPError:
+     print("Вы ввели не корректную ссылку")
+     sys.exit()   
  print('Битлинк', shorten_link(link))
