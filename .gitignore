@@ -1,2 +1,4 @@
-__pycache__
-account
+__pycache__/
+account.py
+shvenv/
+*.pyc
