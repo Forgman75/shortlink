@@ -1,9 +1,15 @@
 import requests
 import sys
-from account import token
+import os
+from dotenv import load_dotenv
 from urllib.parse import urljoin, urlparse
+load_dotenv()
 
 base_url = 'https://api-ssl.bitly.com/v4/'
+TOKEN = os.getenv("TOKEN")
+
+
+
 
 def make_url_for_api(input_url):
     link = urlparse(input_url)
@@ -50,7 +56,7 @@ def count_clicks(headers, input_url):
 def main():
     user_input = input("Введите ссылку:")
     api_url = make_url_for_api(user_input)
-    auth_headers = bearer_auth(token)
+    auth_headers = bearer_auth(TOKEN)
     if is_bitlink(auth_headers, api_url):
       try:
         c_count = count_clicks(auth_headers, api_url)
