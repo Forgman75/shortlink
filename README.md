@@ -7,6 +7,6 @@
 
   Для запуска приложения нужен установленный интерпретатор python3, а также установить зависимости из файла requirements.txt.
 
- ` python3 shortlink.py `\n
+ ` python3 shortlink.py ` <br/>
   `pip install -r requirements.txt `
    
